@@ -52,9 +52,9 @@ const formatCurrency = (amount) => {
 };
 
 // Cart Context
-const CartContext = createContext();
+export const CartContext = createContext();
 
-function CartProvider({ children }) {
+export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
 
@@ -122,7 +122,7 @@ function CartProvider({ children }) {
   );
 }
 
-function useCart() {
+export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
     throw new Error('useCart must be used within a CartProvider');
@@ -984,7 +984,20 @@ function App() {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Here you could verify the token and get user info
     }
-  }, [token]);
+    
+    // Auto-login test user for demo purposes
+    if (!user && !token) {
+      const testUser = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        first_name: 'Test',
+        last_name: 'User'
+      };
+      const testToken = 'demo-token-12345';
+      handleLogin(testUser, testToken);
+    }
+  }, [token, user]);
 
   const handleLogin = (userData, userToken) => {
     setUser(userData);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -12,24 +12,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import axios from 'axios';
-
-// Import the cart context - we need to import it from the parent component
-const CartContext = createContext();
-
-function useCart() {
-  const context = useContext(CartContext);
-  if (!context) {
-    // Create a simple fallback context
-    return {
-      cartItems: [],
-      removeFromCart: () => {},
-      updateQuantity: () => {},
-      clearCart: () => {},
-      getCartTotal: () => 0
-    };
-  }
-  return context;
-}
+import { useCart } from '../App'; // Import the cart context from App
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
@@ -54,10 +37,13 @@ export default function Cart({ user }) {
   const updateQuantity = cartContext?.updateQuantity || updateQuantityLocal;
   const clearCart = cartContext?.clearCart || (() => setLocalCartItems([]));
   const getCartTotal = cartContext?.getCartTotal || (() => calculateTotal());
+  const cartCount = cartContext?.cartCount || 0;
 
   useEffect(() => {
-    // If we don't have cart context, load from API
-    if (!cartContext?.cartItems && user?.id) {
+    // If we have cart context, use it directly, otherwise load from API
+    if (cartContext && cartContext.cartItems !== undefined) {
+      setLoading(false);
+    } else if (user?.id) {
       loadCart();
     } else {
       setLoading(false);
@@ -123,8 +109,23 @@ export default function Cart({ user }) {
     setProcessingPayment(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate payment processing with better UX
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // In a real implementation, you would integrate with:
+      // - Stripe, PayPal, Razorpay, or other payment gateways
+      // - Send order data to backend
+      // - Handle payment confirmation
+      
+      const orderData = {
+        items: cartItems,
+        total: getCartTotal(),
+        paymentMethod,
+        shippingAddress,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('Order processed:', orderData);
       
       setOrderComplete(true);
       clearCart();
@@ -147,7 +148,11 @@ export default function Cart({ user }) {
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.item_total, 0);
+    return cartItems.reduce((total, item) => {
+      // Handle both context items (price * quantity) and API items (item_total)
+      const itemTotal = item.item_total || (item.price * item.quantity);
+      return total + itemTotal;
+    }, 0);
   };
 
   if (!user) {
@@ -220,7 +225,7 @@ export default function Cart({ user }) {
             <p>Add some products to get started!</p>
             <motion.a 
               href="/products" 
-              className="cta-button primary"
+              className="cta-button"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -272,7 +277,7 @@ export default function Cart({ user }) {
                   
                   <div className="quantity-controls">
                     <button
-                      onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item.product_id || item.id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                       className="quantity-btn"
                     >
@@ -280,7 +285,7 @@ export default function Cart({ user }) {
                     </button>
                     <span className="quantity">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.product_id || item.id, item.quantity + 1)}
                       className="quantity-btn"
                     >
                       <Plus size={16} />
@@ -288,7 +293,7 @@ export default function Cart({ user }) {
                   </div>
                   
                   <div className="item-total">
-                    {formatCurrency(item.item_total)}
+                    {formatCurrency(item.item_total || (item.price * item.quantity))}
                   </div>
                   
                   <button
