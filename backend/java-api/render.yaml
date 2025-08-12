@@ -3,8 +3,8 @@ services:
     name: ai-ecommerce-backend
     env: python
     plan: free
-    buildCommand: pip install flask flask-cors PyJWT gunicorn
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app_sqlite:app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: FLASK_ENV
         value: production
