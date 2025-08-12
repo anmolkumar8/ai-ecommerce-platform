@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ai-ecommerce-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+    healthCheckPath: /actuator/health
