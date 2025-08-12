@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -223,15 +224,19 @@ export default function Cart({ user }) {
             <ShoppingCart size={64} />
             <h2>Your cart is empty</h2>
             <p>Add some products to get started!</p>
-            <motion.a 
-              href="/products" 
-              className="cta-button"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Browse Products
-              <ArrowRight size={16} />
-            </motion.a>
+              <Link 
+                to="/products" 
+                className="cta-button"
+                style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                Browse Products
+                <ArrowRight size={16} />
+              </Link>
+            </motion.div>
           </div>
         </div>
       </div>
