@@ -13,9 +13,12 @@ import {
   TrendingUp,
   Filter,
   Grid,
-  ArrowRight
+  ArrowRight,
+  Plus
 } from 'lucide-react';
 import axios from 'axios';
+import Home from './components/Home';
+import Cart from './components/Cart';
 import './App.css';
 
 // API configuration
@@ -75,6 +78,12 @@ function Header({ user, onLogout }) {
             <Grid size={18} style={{ marginRight: '0.5rem' }} />
             Products
           </Link>
+          {user && (
+            <Link to="/cart" className="nav-link cart-link">
+              <ShoppingCart size={18} style={{ marginRight: '0.5rem' }} />
+              Cart
+            </Link>
+          )}
           <div className="user-actions">
             {user ? (
               <>
@@ -874,8 +883,9 @@ function App() {
         <Header user={user} onLogout={handleLogout} />
         <main>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/cart" element={<Cart user={user} />} />
             <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
             <Route path="/register" element={<RegisterPage onLogin={handleLogin} />} />
           </Routes>
