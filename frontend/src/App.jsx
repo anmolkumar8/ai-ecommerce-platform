@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -14,7 +14,8 @@ import {
   Filter,
   Grid,
   ArrowRight,
-  Plus
+  Plus,
+  CheckCircle
 } from 'lucide-react';
 import axios from 'axios';
 import Home from './components/Home';
@@ -40,18 +41,99 @@ const aiApi = axios.create({
   }
 });
 
-// Utility function to format currency
+// Utility function to format currency in Indian Rupees
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    currency: 'INR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(Number(amount));
 };
 
+// Cart Context
+const CartContext = createContext();
+
+function CartProvider({ children }) {
+  const [cartItems, setCartItems] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
+
+  const addToCart = (product, quantity = 1) => {
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        return prevItems.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        return [...prevItems, { ...product, quantity }];
+      }
+    });
+  };
+
+  const removeFromCart = (productId) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  };
+
+  const updateQuantity = (productId, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === productId
+            ? { ...item, quantity: newQuantity }
+            : item
+        )
+      );
+    }
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
+  const getCartTotal = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  // Update cart count when cart items change
+  useEffect(() => {
+    setCartCount(cartItems.reduce((total, item) => total + item.quantity, 0));
+  }, [cartItems]);
+
+  const value = {
+    cartItems,
+    cartCount,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getCartTotal
+  };
+
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+function useCart() {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+}
+
 // Header component
 function Header({ user, onLogout }) {
+  const { cartCount } = useCart();
+  
   return (
     <motion.header 
       className="header"
@@ -78,12 +160,34 @@ function Header({ user, onLogout }) {
             <Grid size={18} style={{ marginRight: '0.5rem' }} />
             Products
           </Link>
-          {user && (
-            <Link to="/cart" className="nav-link cart-link">
-              <ShoppingCart size={18} style={{ marginRight: '0.5rem' }} />
-              Cart
-            </Link>
-          )}
+          <Link to="/cart" className="nav-link cart-link" style={{ position: 'relative' }}>
+            <ShoppingCart size={18} style={{ marginRight: '0.5rem' }} />
+            Cart
+            {cartCount > 0 && (
+              <motion.span 
+                className="cart-badge"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: 'var(--secondary-color)',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold'
+                }}
+              >
+                {cartCount}
+              </motion.span>
+            )}
+          </Link>
           <div className="user-actions">
             {user ? (
               <>
@@ -137,14 +241,14 @@ function HomePage() {
         console.error('Error loading data:', error);
         // Add some demo data for now
         setFeaturedProducts([
-          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 199.99, is_featured: true },
-          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 299.99, is_featured: true },
-          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 1299.99, is_featured: true }
+          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true },
+          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: true },
+          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true }
         ]);
         setRecommendations([
-          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 49.99 },
-          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 129.99 },
-          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 399.99 }
+          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199 },
+          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799 },
+          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299 }
         ]);
       } finally {
         setLoading(false);
@@ -289,14 +393,14 @@ function ProductsPage() {
         console.error('Error loading products:', error);
         // Add demo data for now
         setProducts([
-          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 199.99, is_featured: true },
-          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 299.99, is_featured: false },
-          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 1299.99, is_featured: true },
-          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 49.99, is_featured: false },
-          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 129.99, is_featured: false },
-          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 399.99, is_featured: true },
-          { id: 7, name: 'Smartphone Pro', description: 'Latest flagship smartphone with AI camera', price: 899.99, is_featured: true },
-          { id: 8, name: 'Tablet Ultra', description: 'Professional tablet with stylus support', price: 699.99, is_featured: false }
+          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true },
+          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: false },
+          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true },
+          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199, is_featured: false },
+          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799, is_featured: false },
+          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299, is_featured: true },
+          { id: 7, name: 'Smartphone Pro', description: 'Latest flagship smartphone with AI camera', price: 74999, is_featured: true },
+          { id: 8, name: 'Tablet Ultra', description: 'Professional tablet with stylus support', price: 58299, is_featured: false }
         ]);
         setCategories([
           { id: 1, name: 'Electronics' },
@@ -458,6 +562,8 @@ function ProductsPage() {
 function ProductCard({ product }) {
   const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const { addToCart } = useCart();
 
   // Select appropriate emoji based on product name
   const getProductEmoji = (name) => {
@@ -467,10 +573,17 @@ function ProductCard({ product }) {
     if (lowerName.includes('laptop') || lowerName.includes('computer')) return '💻';
     if (lowerName.includes('mouse')) return '🖱️';
     if (lowerName.includes('keyboard')) return '⌨️';
-    if (lowerName.includes('monitor') || lowerName.includes('screen')) return '🗺️';
+    if (lowerName.includes('monitor') || lowerName.includes('screen')) return '🖱️';
     if (lowerName.includes('phone') || lowerName.includes('mobile')) return '📱';
     if (lowerName.includes('tablet')) return '📱';
     return '📦'; // Default package emoji
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    setIsAdded(true);
+    // Reset the animation after a short delay
+    setTimeout(() => setIsAdded(false), 2000);
   };
 
   return (
@@ -536,16 +649,26 @@ function ProductCard({ product }) {
         </div>
         
         <motion.button 
-          className="add-to-cart-btn"
+          className={`add-to-cart-btn ${isAdded ? 'added' : ''}`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => {
-            // Add to cart logic here
-            console.log('Added to cart:', product.name);
+          onClick={handleAddToCart}
+          animate={{
+            background: isAdded ? '#10b981' : 'var(--accent-color)'
           }}
+          transition={{ duration: 0.3 }}
         >
-          <ShoppingCart size={16} />
-          Add to Cart
+          {isAdded ? (
+            <>
+              <CheckCircle size={16} />
+              Added!
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={16} />
+              Add to Cart
+            </>
+          )}
         </motion.button>
       </div>
     </motion.div>
@@ -878,20 +1001,22 @@ function App() {
   };
 
   return (
-    <Router>
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-        <Header user={user} onLogout={handleLogout} />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<ProductsPage />} />
-            <Route path="/cart" element={<Cart user={user} />} />
-            <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-            <Route path="/register" element={<RegisterPage onLogin={handleLogin} />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <CartProvider>
+      <Router>
+        <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+          <Header user={user} onLogout={handleLogout} />
+          <main>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/cart" element={<Cart user={user} />} />
+              <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+              <Route path="/register" element={<RegisterPage onLogin={handleLogin} />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 
