@@ -1,16 +1,32 @@
-# ANUFA - Premium AI-Powered E-commerce Platform
+# 🚀 ANUFA - GenAI-Driven E-commerce Platform for Personalized Customer Experience
 
-ANUFA is a modern, interactive e-commerce platform that combines premium design with AI-powered product recommendations. Built with React and featuring a beautiful, responsive user interface.
+ANUFA is a cutting-edge e-commerce platform powered by advanced Generative AI technologies, specifically designed for research in "GenAI-Driven Java Framework for Personalized Customer Experience in E-Commerce". This platform combines modern web technologies with sophisticated AI algorithms to deliver highly personalized customer experiences.
 
-## 🌟 Features
+## 🧠 GenAI Features (Research Focus)
+
+### Advanced AI Personalization
+- **Natural Language Processing**: Real-time sentiment analysis and intent recognition
+- **Conversational AI**: Context-aware, empathetic customer interactions
+- **Dynamic Customer Profiling**: AI-driven personality trait inference and behavioral analysis
+- **Emotional Intelligence**: Emotion-aware responses and engagement strategies
+- **Predictive Analytics**: Churn risk prediction and customer lifetime value estimation
+- **Dynamic Pricing**: AI-driven personalized pricing based on customer profiles
+
+### Real-time AI Processing
+- **Multi-factor Personalization Scoring**: Behavioral, sentiment, and context analysis
+- **Adaptive Recommendation Engine**: Collaborative filtering + content-based + hybrid algorithms
+- **Customer Journey Orchestration**: Lifecycle stage tracking and targeted interventions
+- **Real-time Profile Updates**: Continuous learning from customer interactions
+
+## 🌟 Core Platform Features
 
 - **Premium Design**: Modern, interactive UI with smooth animations and ANUFA branding
-- **AI-Powered Recommendations**: Personalized product suggestions using advanced AI
+- **AI-Powered Recommendations**: Multi-algorithm recommendation system with confidence scoring
 - **Responsive Design**: Optimized for all devices (desktop, tablet, mobile)
 - **Currency Formatting**: Professional money display in USD format
 - **Interactive Elements**: Hover effects, animations, and micro-interactions
-- **User Authentication**: Secure login and registration system
-- **Product Search & Filtering**: Advanced search capabilities with category filters
+- **User Authentication**: Secure JWT-based login and registration system
+- **Advanced Search & Filtering**: AI-enhanced search with category and preference filters
 - **Modern Icons**: Beautiful lucide-react icons throughout the interface
 
 ## 🚀 Technology Stack
@@ -156,6 +172,14 @@ npm run dev
 - `POST /recommendations` - Get AI recommendations
 - `GET /products` - List products for AI
 - `POST /track-interaction` - Track user interactions
+
+### GenAI Personalization Endpoints (`/genai`)
+- `POST /genai/customer-interaction` - Process customer messages with full AI analysis
+- `POST /genai/personalized-recommendations` - Generate AI-driven product recommendations with reasoning
+- `POST /genai/sentiment-analysis` - Analyze customer sentiment using NLP
+- `POST /genai/conversational-ai` - Generate empathetic, context-aware responses
+- `GET /genai/customer-profile/{user_id}` - Get comprehensive customer profile with AI insights
+- `POST /genai/dynamic-pricing` - Calculate personalized pricing based on customer profile
 
 ## 🏗️ Tech Stack
 

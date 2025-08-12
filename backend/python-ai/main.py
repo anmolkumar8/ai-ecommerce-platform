@@ -249,6 +249,306 @@ async def get_popular_products():
         "featured_count": len(featured_products)
     }
 
+# GenAI Personalization Endpoints
+
+@app.post("/genai/customer-interaction")
+async def process_customer_interaction(
+    user_id: int,
+    message: str,
+    interaction_type: str = "chat",
+    channel: str = "web",
+    demographics: Optional[dict] = None
+):
+    """
+    Process customer interaction using advanced GenAI services
+    """
+    try:
+        from genai_services import AdvancedPersonalizationOrchestrator
+        
+        # Initialize GenAI orchestrator
+        orchestrator = AdvancedPersonalizationOrchestrator()
+        
+        # Prepare interaction data
+        interaction_data = {
+            'message': message,
+            'type': interaction_type,
+            'channel': channel,
+            'demographics': demographics or {},
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Process interaction with all AI services
+        result = await orchestrator.process_customer_interaction(user_id, interaction_data)
+        
+        return {
+            "status": "success",
+            "ai_analysis": result
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"GenAI processing failed: {str(e)}")
+
+@app.post("/genai/personalized-recommendations")
+async def get_personalized_recommendations(
+    user_id: int,
+    context: str = "general",
+    limit: int = 10,
+    include_reasoning: bool = True
+):
+    """
+    Get AI-powered personalized product recommendations
+    """
+    try:
+        from genai_services import AdvancedPersonalizationOrchestrator
+        
+        orchestrator = AdvancedPersonalizationOrchestrator()
+        
+        # Check if customer profile exists
+        if user_id in orchestrator.personalization_engine.customer_profiles:
+            profile = orchestrator.personalization_engine.customer_profiles[user_id]
+            
+            # Get top preferences
+            top_categories = sorted(
+                profile.preferences.items(), 
+                key=lambda x: x[1], 
+                reverse=True
+            )[:3]
+            
+            # Generate recommendations based on preferences
+            recommendations = []
+            for category, score in top_categories:
+                category_products = [p for p in SAMPLE_PRODUCTS if p.id <= 5]  # Sample logic
+                for product in category_products[:limit//3]:
+                    recommendations.append({
+                        "product_id": product.id,
+                        "name": product.name,
+                        "price": product.price,
+                        "confidence_score": round(score * 0.9, 2),
+                        "reasoning": f"Based on your {category} preference score of {score:.2f}" if include_reasoning else None,
+                        "personalization_type": "preference_based"
+                    })
+            
+            return {
+                "user_id": user_id,
+                "recommendations": recommendations[:limit],
+                "customer_insights": {
+                    "lifecycle_stage": profile.lifecycle_stage,
+                    "predicted_ltv": profile.predicted_ltv,
+                    "churn_risk": profile.churn_risk
+                },
+                "generated_at": datetime.now().isoformat()
+            }
+        else:
+            # Return popular products for new users
+            popular_products = [p for p in SAMPLE_PRODUCTS if p.is_featured][:limit]
+            return {
+                "user_id": user_id,
+                "recommendations": [{
+                    "product_id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "confidence_score": 0.7,
+                    "reasoning": "Popular product for new customers" if include_reasoning else None,
+                    "personalization_type": "popularity_based"
+                } for p in popular_products],
+                "customer_insights": {
+                    "lifecycle_stage": "new",
+                    "predicted_ltv": 100.0,
+                    "churn_risk": 0.1
+                },
+                "generated_at": datetime.now().isoformat()
+            }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Personalized recommendations failed: {str(e)}")
+
+@app.post("/genai/sentiment-analysis")
+async def analyze_customer_sentiment(
+    text: str,
+    user_id: Optional[int] = None
+):
+    """
+    Analyze customer sentiment using NLP
+    """
+    try:
+        from genai_services import NaturalLanguageProcessor
+        
+        nlp = NaturalLanguageProcessor()
+        
+        # Analyze sentiment and intent
+        sentiment = await nlp.analyze_sentiment(text)
+        intent = await nlp.extract_intent(text)
+        attributes = await nlp.extract_product_attributes(text)
+        
+        return {
+            "text": text,
+            "sentiment_analysis": sentiment,
+            "intent_analysis": intent,
+            "extracted_attributes": attributes,
+            "dominant_sentiment": max(sentiment.items(), key=lambda x: x[1])[0],
+            "primary_intent": max(intent.items(), key=lambda x: x[1])[0],
+            "analyzed_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sentiment analysis failed: {str(e)}")
+
+@app.post("/genai/conversational-ai")
+async def conversational_ai_response(
+    user_message: str,
+    user_id: int,
+    context: str = "general"
+):
+    """
+    Generate AI-powered conversational response
+    """
+    try:
+        from genai_services import ConversationalAI, AdvancedPersonalizationOrchestrator
+        
+        orchestrator = AdvancedPersonalizationOrchestrator()
+        conv_ai = ConversationalAI()
+        
+        # Get or create customer profile
+        if user_id not in orchestrator.personalization_engine.customer_profiles:
+            profile = await orchestrator.personalization_engine.create_customer_profile(user_id, {})
+        else:
+            profile = orchestrator.personalization_engine.customer_profiles[user_id]
+        
+        # Generate AI response
+        ai_response = await conv_ai.generate_response(user_message, profile, context)
+        
+        # Analyze emotions for empathetic response
+        emotions = await orchestrator.emotional_ai.analyze_emotional_state(user_message, profile.interaction_history)
+        empathetic_response = await orchestrator.emotional_ai.generate_empathetic_response(emotions, context)
+        
+        return {
+            "user_message": user_message,
+            "ai_response": ai_response,
+            "empathetic_response": empathetic_response,
+            "emotional_analysis": emotions,
+            "customer_context": {
+                "lifecycle_stage": profile.lifecycle_stage,
+                "interaction_count": len(profile.interaction_history)
+            },
+            "response_generated_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Conversational AI failed: {str(e)}")
+
+@app.get("/genai/customer-profile/{user_id}")
+async def get_customer_profile(user_id: int):
+    """
+    Get comprehensive customer profile with AI insights
+    """
+    try:
+        from genai_services import AdvancedPersonalizationOrchestrator
+        
+        orchestrator = AdvancedPersonalizationOrchestrator()
+        
+        if user_id in orchestrator.personalization_engine.customer_profiles:
+            profile = orchestrator.personalization_engine.customer_profiles[user_id]
+            
+            return {
+                "customer_id": user_id,
+                "profile": {
+                    "demographics": profile.demographics,
+                    "preferences": profile.preferences,
+                    "behavior_patterns": profile.behavior_patterns,
+                    "personality_traits": profile.personality_traits,
+                    "lifecycle_stage": profile.lifecycle_stage,
+                    "predicted_ltv": profile.predicted_ltv,
+                    "churn_risk": profile.churn_risk,
+                    "interaction_count": len(profile.interaction_history),
+                    "last_updated": profile.last_updated.isoformat()
+                },
+                "ai_insights": {
+                    "top_preferences": dict(sorted(profile.preferences.items(), key=lambda x: x[1], reverse=True)[:5]),
+                    "risk_level": "high" if profile.churn_risk > 0.7 else "medium" if profile.churn_risk > 0.4 else "low",
+                    "value_segment": "high" if profile.predicted_ltv > 500 else "medium" if profile.predicted_ltv > 200 else "standard"
+                }
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Customer profile not found")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Profile retrieval failed: {str(e)}")
+
+@app.post("/genai/dynamic-pricing")
+async def get_dynamic_pricing(
+    product_id: int,
+    user_id: int,
+    context: str = "standard"
+):
+    """
+    Get AI-driven dynamic pricing based on customer profile
+    """
+    try:
+        from genai_services import AdvancedPersonalizationOrchestrator
+        
+        orchestrator = AdvancedPersonalizationOrchestrator()
+        
+        # Find product
+        product = next((p for p in SAMPLE_PRODUCTS if p.id == product_id), None)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        base_price = product.price
+        
+        # Get customer profile for personalization
+        if user_id in orchestrator.personalization_engine.customer_profiles:
+            profile = orchestrator.personalization_engine.customer_profiles[user_id]
+            
+            # Dynamic pricing logic based on customer profile
+            price_multiplier = 1.0
+            
+            # Churn risk pricing
+            if profile.churn_risk > 0.6:
+                price_multiplier *= 0.85  # 15% discount for at-risk customers
+            
+            # High-value customer pricing
+            if profile.predicted_ltv > 1000:
+                price_multiplier *= 1.05  # Slight premium for high-value customers
+            
+            # Lifecycle stage pricing
+            if profile.lifecycle_stage == "new":
+                price_multiplier *= 0.9  # 10% new customer discount
+            elif profile.lifecycle_stage == "champion":
+                price_multiplier *= 0.95  # 5% loyalty discount
+            
+            final_price = round(base_price * price_multiplier, 2)
+            discount_amount = round(base_price - final_price, 2)
+            
+            return {
+                "product_id": product_id,
+                "base_price": base_price,
+                "personalized_price": final_price,
+                "discount_amount": discount_amount,
+                "discount_percentage": round((discount_amount / base_price) * 100, 1) if discount_amount > 0 else 0,
+                "pricing_factors": {
+                    "churn_risk_adjustment": profile.churn_risk > 0.6,
+                    "high_value_customer": profile.predicted_ltv > 1000,
+                    "lifecycle_discount": profile.lifecycle_stage in ["new", "champion"]
+                },
+                "generated_at": datetime.now().isoformat()
+            }
+        else:
+            # Standard pricing for unknown customers
+            return {
+                "product_id": product_id,
+                "base_price": base_price,
+                "personalized_price": base_price,
+                "discount_amount": 0,
+                "discount_percentage": 0,
+                "pricing_factors": {
+                    "new_customer": True
+                },
+                "generated_at": datetime.now().isoformat()
+            }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Dynamic pricing failed: {str(e)}")
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get('PORT', 8001))
