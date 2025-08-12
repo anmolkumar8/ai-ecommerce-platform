@@ -120,7 +120,25 @@ def health_check():
         'status': 'UP',
         'service': 'ecommerce-java-api',
         'timestamp': datetime.datetime.now().isoformat(),
-        'database': 'SQLite'
+        'database': 'SQLite',
+        'message': 'Backend is running successfully!'
+    })
+
+@app.route('/', methods=['GET'])
+def root():
+    return jsonify({
+        'message': 'Welcome to ANUFA E-commerce API!',
+        'status': 'running',
+        'version': '1.0.0',
+        'endpoints': {
+            'health': '/actuator/health',
+            'products': '/products',
+            'categories': '/categories',
+            'featured': '/products/featured',
+            'search': '/search?q=term',
+            'login': '/auth/login',
+            'register': '/auth/register'
+        }
     })
 
 @app.route('/auth/login', methods=['POST'])
