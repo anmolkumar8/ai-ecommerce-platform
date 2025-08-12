@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -24,7 +24,14 @@ const api = axios.create({
 
 export default function Cart({ user }) {
   // Try to use cart context, fallback to local state
-  const cartContext = useCart();
+  let cartContext;
+  try {
+    cartContext = useCart();
+  } catch (error) {
+    console.warn('Cart context not available, using local state:', error);
+    cartContext = null;
+  }
+  const navigate = useNavigate();
   const [localCartItems, setLocalCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(false);
@@ -203,6 +210,7 @@ export default function Cart({ user }) {
               onClick={() => {
                 setOrderComplete(false);
                 setShippingAddress('');
+                navigate('/products');
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -232,6 +240,10 @@ export default function Cart({ user }) {
                 to="/products" 
                 className="cta-button"
                 style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                onClick={() => {
+                  console.log('Browse Products clicked - navigating to /products');
+                  console.log('Current location:', window.location.href);
+                }}
               >
                 Browse Products
                 <ArrowRight size={16} />

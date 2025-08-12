@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Cart Navigation</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .test-link { display: inline-block; margin: 10px; padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .test-link:hover { background: #0056b3; }
+        .debug-info { background: #f8f9fa; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Cart Navigation Debug Page</h1>
+    
+    <div class="test-section">
+        <h2>Direct Navigation Tests</h2>
+        <a href="/" class="test-link">Go to Home</a>
+        <a href="/products" class="test-link">Go to Products (Regular Link)</a>
+        <a href="/cart" class="test-link">Go to Cart</a>
+        
+        <div class="debug-info">
+            Current URL: <span id="current-url"></span><br>
+            Browser: <span id="browser-info"></span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>React Router Link Test</h2>
+        <p>If you're seeing "product not found" errors, it could be due to:</p>
+        <ul>
+            <li>Browser cache issues</li>
+            <li>React Router configuration problems</li>
+            <li>Base URL or routing conflicts</li>
+            <li>Case sensitivity in routes</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Debug Actions</h2>
+        <button onclick="clearCache()">Clear Browser Cache (Hard Refresh)</button>
+        <button onclick="checkRoutes()">Check Route Configuration</button>
+        <button onclick="testNavigation()">Test React Router Navigation</button>
+        
+        <div id="debug-output" class="debug-info" style="display:none;">
+            <h3>Debug Output:</h3>
+            <pre id="debug-text"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Update current URL display
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('browser-info').textContent = navigator.userAgent;
+
+        function clearCache() {
+            if (confirm('This will hard refresh the page to clear cache. Continue?')) {
+                window.location.reload(true);
+            }
+        }
+
+        function checkRoutes() {
+            const debugOutput = document.getElementById('debug-output');
+            const debugText = document.getElementById('debug-text');
+            
+            let output = 'Route Check Results:\n';
+            output += '==================\n';
+            output += `Current Origin: ${window.location.origin}\n`;
+            output += `Current Pathname: ${window.location.pathname}\n`;
+            output += `Current Hash: ${window.location.hash}\n`;
+            output += `Current Search: ${window.location.search}\n`;
+            output += '\nTesting route accessibility:\n';
+            
+            const routes = ['/', '/products', '/cart', '/login', '/register'];
+            routes.forEach(route => {
+                output += `${route}: ${window.location.origin}${route}\n`;
+            });
+            
+            debugText.textContent = output;
+            debugOutput.style.display = 'block';
+        }
+
+        function testNavigation() {
+            const debugOutput = document.getElementById('debug-output');
+            const debugText = document.getElementById('debug-text');
+            
+            let output = 'Navigation Test Results:\n';
+            output += '========================\n';
+            
+            // Try to detect if we're in a React app
+            if (window.React) {
+                output += 'React detected: YES\n';
+            } else {
+                output += 'React detected: NO (this might be the issue)\n';
+            }
+            
+            // Check if React Router is available
+            if (window.ReactRouter) {
+                output += 'React Router detected: YES\n';
+            } else {
+                output += 'React Router detected: NO\n';
+            }
+            
+            output += '\nThis debug page is outside the React app.\n';
+            output += 'Navigate to the actual app and check browser console for errors.\n';
+            
+            debugText.textContent = output;
+            debugOutput.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
