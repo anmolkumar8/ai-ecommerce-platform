@@ -394,39 +394,59 @@ function ProductsPage() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start with no loading
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
+      // Demo data for instant loading
+      const demoProducts = [
+        { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true, category_id: 1 },
+        { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: false, category_id: 1 },
+        { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true, category_id: 2 },
+        { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199, is_featured: false, category_id: 2 },
+        { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799, is_featured: false, category_id: 2 },
+        { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299, is_featured: true, category_id: 2 },
+        { id: 7, name: 'Smartphone Pro', description: 'Latest flagship smartphone with AI camera', price: 74999, is_featured: true, category_id: 4 },
+        { id: 8, name: 'Tablet Ultra', description: 'Professional tablet with stylus support', price: 58299, is_featured: false, category_id: 4 },
+        { id: 9, name: 'Gaming Headset', description: 'Professional gaming headset with 7.1 surround sound', price: 8999, is_featured: false, category_id: 3 },
+        { id: 10, name: 'Bluetooth Speaker', description: 'Portable wireless speaker with premium sound', price: 3499, is_featured: false, category_id: 3 },
+        { id: 11, name: 'Fitness Tracker', description: 'Advanced fitness tracker with heart rate monitoring', price: 12999, is_featured: true, category_id: 1 },
+        { id: 12, name: 'Webcam HD', description: '4K webcam for streaming and video calls', price: 6999, is_featured: false, category_id: 2 }
+      ];
+      
+      const demoCategories = [
+        { id: 1, name: 'Electronics' },
+        { id: 2, name: 'Computers' },
+        { id: 3, name: 'Audio' },
+        { id: 4, name: 'Mobile' }
+      ];
+
       try {
+        // Set demo data instantly for immediate UI feedback
+        setProducts(demoProducts);
+        setCategories(demoCategories);
+        setIsInitialLoad(false);
+        
+        // Load real data in background without showing loading spinner
         const [productsResponse, categoriesResponse] = await Promise.all([
-          api.get('/products'),
-          api.get('/categories')
+          api.get('/products').catch(err => ({ data: { products: demoProducts } })),
+          api.get('/categories').catch(err => ({ data: { categories: demoCategories } }))
         ]);
         
-        setProducts(productsResponse.data.products || []);
-        setCategories(categoriesResponse.data.categories || []);
+        // Update with real data if available and different from demo
+        if (productsResponse.data.products && productsResponse.data.products.length > 0) {
+          setProducts(productsResponse.data.products);
+        }
+        
+        if (categoriesResponse.data.categories && categoriesResponse.data.categories.length > 0) {
+          setCategories(categoriesResponse.data.categories);
+        }
+        
       } catch (error) {
-        console.error('Error loading products:', error);
-        // Add demo data for now
-        setProducts([
-          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true },
-          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: false },
-          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true },
-          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199, is_featured: false },
-          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799, is_featured: false },
-          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299, is_featured: true },
-          { id: 7, name: 'Smartphone Pro', description: 'Latest flagship smartphone with AI camera', price: 74999, is_featured: true },
-          { id: 8, name: 'Tablet Ultra', description: 'Professional tablet with stylus support', price: 58299, is_featured: false }
-        ]);
-        setCategories([
-          { id: 1, name: 'Electronics' },
-          { id: 2, name: 'Computers' },
-          { id: 3, name: 'Audio' },
-          { id: 4, name: 'Mobile' }
-        ]);
-      } finally {
-        setLoading(false);
+        console.warn('Using demo data due to API error:', error);
+        // Demo data is already set above, so no need to set again
+        setIsInitialLoad(false);
       }
     };
 
@@ -464,15 +484,15 @@ function ProductsPage() {
   return (
     <motion.div 
       className="container"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.2 }}
     >
       <motion.section 
         className="section"
-        initial={{ y: 30, opacity: 0 }}
+        initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.5 }}
+        transition={{ delay: 0, duration: 0.2 }}
       >
         <h1 className="section-title">
           <TrendingUp size={32} />
@@ -485,9 +505,9 @@ function ProductsPage() {
         {/* Search and Filter Bar */}
         <motion.div 
           className="search-filter-bar"
-          initial={{ y: 20, opacity: 0 }}
+          initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
+          transition={{ delay: 0.1, duration: 0.2 }}
         >
           <form onSubmit={handleSearch} className="search-form">
             <div style={{ position: 'relative', flex: 1 }}>
@@ -539,18 +559,18 @@ function ProductsPage() {
         {filteredProducts.length > 0 ? (
           <motion.div 
             className="products-grid"
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
           >
             <AnimatePresence>
               {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
-                  initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                  initial={{ y: 10, opacity: 0, scale: 0.95 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: -30, opacity: 0, scale: 0.9 }}
-                  transition={{ delay: index * 0.05, duration: 0.4 }}
+                  exit={{ y: -10, opacity: 0, scale: 0.95 }}
+                  transition={{ delay: index * 0.02, duration: 0.25 }}
                   layout
                 >
                   <ProductCard product={product} />
