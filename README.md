@@ -1,270 +1,188 @@
-# 🚀 ANUFA - GenAI-Driven E-commerce Platform for Personalized Customer Experience
+# 🛒 ANUFA AI E-commerce Platform
 
-ANUFA is a cutting-edge e-commerce platform powered by advanced Generative AI technologies, specifically designed for research in "GenAI-Driven Java Framework for Personalized Customer Experience in E-Commerce". This platform combines modern web technologies with sophisticated AI algorithms to deliver highly personalized customer experiences.
+🤖 **Complete AI-Powered E-commerce Solution** - A modern, intelligent e-commerce platform featuring zero-latency loading, personalized AI recommendations, and seamless user experience.
 
-## 🧠 GenAI Features (Research Focus)
+## ⚡ Key Highlights
 
-### Advanced AI Personalization
-- **Natural Language Processing**: Real-time sentiment analysis and intent recognition
-- **Conversational AI**: Context-aware, empathetic customer interactions
-- **Dynamic Customer Profiling**: AI-driven personality trait inference and behavioral analysis
-- **Emotional Intelligence**: Emotion-aware responses and engagement strategies
-- **Predictive Analytics**: Churn risk prediction and customer lifetime value estimation
-- **Dynamic Pricing**: AI-driven personalized pricing based on customer profiles
+- **🚀 Zero Latency Loading**: Instant product display with background data fetching
+- **🧠 AI-Powered Recommendations**: Smart product suggestions using machine learning
+- **🔐 Secure Authentication**: JWT-based user registration and login system
+- **📱 Responsive Design**: Mobile-first, modern UI/UX
+- **🗄️ Complete Database Solution**: Single-file database setup and management
 
-### Real-time AI Processing
-- **Multi-factor Personalization Scoring**: Behavioral, sentiment, and context analysis
-- **Adaptive Recommendation Engine**: Collaborative filtering + content-based + hybrid algorithms
-- **Customer Journey Orchestration**: Lifecycle stage tracking and targeted interventions
-- **Real-time Profile Updates**: Continuous learning from customer interactions
-
-## 🌟 Core Platform Features
-
-- **Premium Design**: Modern, interactive UI with smooth animations and ANUFA branding
-- **AI-Powered Recommendations**: Multi-algorithm recommendation system with confidence scoring
-- **Responsive Design**: Optimized for all devices (desktop, tablet, mobile)
-- **Currency Formatting**: Professional money display in USD format
-- **Interactive Elements**: Hover effects, animations, and micro-interactions
-- **User Authentication**: Secure JWT-based login and registration system
-- **Advanced Search & Filtering**: AI-enhanced search with category and preference filters
-- **Modern Icons**: Beautiful lucide-react icons throughout the interface
-
-## 🚀 Technology Stack
-
-- **Frontend**: React 18 with Vite
-- **Styling**: CSS Variables with modern design system
-- **Animations**: Framer Motion for smooth transitions
-- **Icons**: Lucide React
-- **Routing**: React Router DOM
-- **HTTP Client**: Axios
-- **Currency**: Intl.NumberFormat API for proper money formatting
-
-## 💰 Currency Features
-
-- Professional USD formatting (e.g., $1,299.99)
-- Consistent money display across all components
-- Proper number formatting with commas and decimal places
-- Responsive price displays on product cards
-
-## 🎨 Design Highlights
-
-### ANUFA Branding
-- Gradient logo with modern typography
-- Purple and orange color scheme
-- Premium visual identity
-- Consistent brand application
-
-### Interactive UI
-- Smooth page transitions
-- Product card hover effects
-- Button animations
-- Loading spinners
-- Form validation feedback
-
-### Home vs Products Pages
-- **Home Page**: Hero section, featured products, AI recommendations
-- **Products Page**: Complete catalog with search and filters
-- Different layouts optimized for their specific purposes
-
-## 🚀 Deployment on Render
-
-The project is ready for deployment on Render with the included `render.yaml` configuration.
-
-### Quick Deploy
-1. Push your code to GitHub
-2. Connect repository to Render
-3. Create new Static Site with these settings:
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-   - **Environment Variables**: Configure your API endpoints
-
-### Live URL
-Once deployed: `https://anufa-ecommerce.onrender.com`
-
----
-
-**ANUFA** - Where premium meets technology. 🚀✨
-
-# 🛒 AI-Powered E-commerce Platform
-
-A full-stack e-commerce platform with AI-driven product recommendations, built with React, Flask, and FastAPI.
-
-## 🌟 Features
-
-- **🤖 AI Recommendations** - Machine learning-powered product suggestions
-- **👤 User Authentication** - Secure login and registration
-- **📦 Product Catalog** - Browse and search products
-- **🏷️ Categories** - Organized product categories
-- **📱 Responsive Design** - Works on desktop and mobile
-- **🔍 Search & Filter** - Find products easily
-- **🛡️ Secure API** - JWT-based authentication
-
-## 🏗️ Architecture
-
-### Backend Services
-- **Flask API** (`backend/java-api/`) - Main REST API for products, users, auth
-- **FastAPI AI Service** (`backend/python-ai/`) - ML-powered recommendations
-
-### Frontend
-- **React App** (`frontend/`) - Modern SPA with Vite build tool
-
-### Database
-- **SQLite** - Lightweight database with sample data
-
-## 🚀 Live Demo
-
-**🌐 Frontend**: [Your-Frontend-URL.onrender.com](https://your-frontend-url.onrender.com)  
-**🔧 Backend API**: [Your-Backend-URL.onrender.com](https://your-backend-url.onrender.com)  
-**🤖 AI Service**: [Your-AI-Service-URL.onrender.com](https://your-ai-service-url.onrender.com)
-
-## 👥 Sample Accounts
-
-- **Username**: `johndoe` | **Password**: `password123`
-- **Username**: `janesmit` | **Password**: `password123`
-
-## 🛠️ Local Development
-
-### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
-
-### Setup & Run
-```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/ai-ecommerce-platform.git
-cd ai-ecommerce-platform
-
-# Backend API
-cd backend/java-api
-pip install -r requirements.txt
-python app.py
-
-# AI Service (in new terminal)
-cd backend/python-ai
-pip install -r requirements.txt
-uvicorn main:app --host 127.0.0.1 --port 8001
-
-# Frontend (in new terminal)
-cd frontend
-npm install
-npm run dev
-```
-
-**Access locally:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8080
-- AI Service: http://localhost:8001
-
-## 📡 API Endpoints
-
-### Backend API (`/api`)
-- `GET /actuator/health` - Health check
-- `POST /auth/login` - User login
-- `POST /auth/register` - User registration
-- `GET /products` - List all products
-- `GET /products/{id}` - Get product details
-- `GET /categories` - List categories
-- `GET /search?q={query}` - Search products
-
-### AI Service (`/ai`)
-- `GET /health` - Health check
-- `POST /recommendations` - Get AI recommendations
-- `GET /products` - List products for AI
-- `POST /track-interaction` - Track user interactions
-
-### GenAI Personalization Endpoints (`/genai`)
-- `POST /genai/customer-interaction` - Process customer messages with full AI analysis
-- `POST /genai/personalized-recommendations` - Generate AI-driven product recommendations with reasoning
-- `POST /genai/sentiment-analysis` - Analyze customer sentiment using NLP
-- `POST /genai/conversational-ai` - Generate empathetic, context-aware responses
-- `GET /genai/customer-profile/{user_id}` - Get comprehensive customer profile with AI insights
-- `POST /genai/dynamic-pricing` - Calculate personalized pricing based on customer profile
-
-## 🏗️ Tech Stack
-
-### Backend
-- **Flask** - Python web framework
-- **FastAPI** - Modern Python API framework
-- **SQLite** - Database
-- **JWT** - Authentication
-- **CORS** - Cross-origin requests
-
-### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool
-- **Axios** - HTTP client
-- **CSS3** - Styling
-
-### AI/ML
-- **Scikit-learn** - Machine learning
-- **Pandas** - Data processing
-- **Asyncio** - Async processing
-
-### Deployment
-- **Render** - Cloud hosting
-- **GitHub** - Version control
-- **Git** - Source control
-
-## 📦 Project Structure
+## 🏗️ Project Structure
 
 ```
 ai-ecommerce-platform/
-├── backend/
-│   ├── java-api/           # Flask REST API
-│   │   ├── app.py
-│   │   └── requirements.txt
-│   └── python-ai/          # FastAPI AI Service
-│       ├── main.py
-│       └── requirements.txt
-├── frontend/               # React Frontend
+├── frontend/                 # React.js Frontend
 │   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-├── database/
-│   └── init.sql           # Database schema
-├── deployment/
-│   └── nginx.conf         # Nginx config
-└── README.md
+│   │   ├── App.jsx          # Main application component
+│   │   └── App.css          # Styling
+│   ├── index.html           # HTML template
+│   └── package.json         # Dependencies
+├── backend/
+│   └── java-api/
+│       ├── app_sqlite.py    # Main Flask API server
+│       ├── requirements_sqlite.txt  # Python dependencies
+│       └── ecommerce.db     # SQLite database (auto-created)
+└── database_setup.py        # 🔧 Single database management tool
 ```
 
-## 🚀 Deployment
+## 🚀 Quick Start
 
-### Deploy to Render (Free)
-1. Fork this repository
-2. Connect to [Render](https://render.com)
-3. Follow the [Deployment Guide](RENDER_DEPLOYMENT_GUIDE.md)
-
-### Deploy with Docker
+### 1. Clone Repository
 ```bash
-docker-compose up -d
+git clone https://github.com/your-username/ai-ecommerce-platform.git
+cd ai-ecommerce-platform
 ```
+
+### 2. Setup Database (Required First)
+```bash
+python database_setup.py
+# Choose option 1 to initialize database
+```
+
+### 3. Start Backend API
+```bash
+cd backend/java-api
+pip install -r requirements_sqlite.txt
+python app_sqlite.py
+# Server runs on http://localhost:8080
+```
+
+### 4. Start Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+# Development server runs on http://localhost:5173
+```
+
+## 🗄️ Database Management
+
+**Single Command Database Setup:**
+
+```bash
+python database_setup.py
+```
+
+### Available Options:
+1. **🔧 Initialize/Setup Database** - Create all tables with sample data
+2. **📊 View Database Summary** - See record counts and database info
+3. **👀 View All Data** - Browse all table contents
+4. **🔍 View Specific Table** - Examine individual tables
+5. **🔄 Reset Database** - Complete database reset and reinitialize
+
+### Database Features:
+- ✅ Complete table creation (users, products, categories, cart, orders, AI recommendations)
+- 📦 Comprehensive sample data insertion
+- 👥 Test users with authentication (password: `password123`)
+- 🛍️ Sample products across multiple categories
+- 🧠 AI recommendation examples
+- 📊 Order and cart sample data
+
+## 🌐 API Endpoints
+
+### Authentication
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+
+### Products & Categories  
+- `GET /products` - All products
+- `GET /products/{id}` - Specific product
+- `GET /products/featured` - Featured products
+- `GET /categories` - All categories
+- `GET /search?q={query}` - Product search
+
+### System
+- `GET /actuator/health` - Health check
+
+## 🧪 Test Data
+
+### Sample Users (Password: `password123`)
+- **johndoe** (john@example.com)
+- **janesmit** (jane@example.com)  
+- **bobwilson** (bob@example.com)
+
+### Sample Products
+- Smartphones, Laptops, Headphones (Electronics)
+- T-shirts, Jeans, Shoes (Clothing)
+- Programming Books, AI Guides (Books)
+- Garden Tools, Security Systems (Home & Garden)
+- Yoga Mats, Dumbbells (Sports)
+
+## 💻 Technology Stack
+
+### Frontend
+- **React.js** with **Vite** (Fast development)
+- **Modern CSS** (Responsive design)
+- **JavaScript ES6+**
+
+### Backend
+- **Python Flask** (REST API)
+- **SQLite** (Local database)
+- **JWT** (Authentication)
+- **SHA256** (Password hashing)
+
+### Database
+- **SQLite** (Zero-configuration)
+- **Foreign Keys** (Data integrity)
+- **Comprehensive Schema** (All e-commerce entities)
+
+## 🔧 Development
+
+### Database Management
+```bash
+# Initialize fresh database
+python database_setup.py
+# Select option 1
+
+# View database contents
+python database_setup.py  
+# Select option 3
+
+# Reset everything
+python database_setup.py
+# Select option 5
+```
+
+### Running Services
+```bash
+# Backend API
+cd backend/java-api && python app_sqlite.py
+
+# Frontend Development  
+cd frontend && npm run dev
+```
+
+## ⚡ Zero Latency Feature
+
+The platform implements **instant loading** by:
+1. **Immediate UI Rendering** - Demo data displays instantly
+2. **Background Data Fetching** - Real data loads seamlessly
+3. **No Loading Spinners** - Eliminates perceived wait time
+4. **Smooth Transitions** - Demo to real data updates transparently
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/NewFeature`)
+3. Commit changes (`git commit -m 'Add NewFeature'`)
+4. Push branch (`git push origin feature/NewFeature`)
 5. Open Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT License - See LICENSE file for details.
 
-## 🙏 Acknowledgments
+## 🆘 Support
 
-- Flask and FastAPI communities
-- React and Vite teams
-- Render for free hosting
-- Open source AI/ML libraries
-
-## 📧 Contact
-
-**Developer**: Anmol  
-**Project**: AI E-commerce Platform  
-**Repository**: [GitHub](https://github.com/YOUR_USERNAME/ai-ecommerce-platform)
+- **Issues**: [GitHub Issues](https://github.com/your-username/ai-ecommerce-platform/issues)
+- **Documentation**: Check code comments and this README
+- **Database Problems**: Use `database_setup.py` to reset/reinitialize
 
 ---
 
-⭐ Star this repository if you found it helpful!
+⭐ **Star this repository if it helps you!**
+
+*Built with ❤️ for modern e-commerce development*
