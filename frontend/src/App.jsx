@@ -223,35 +223,52 @@ function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      // Default demo data
+      const demoFeaturedProducts = [
+        { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true },
+        { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: true },
+        { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true }
+      ];
+      
+      const demoRecommendations = [
+        { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199 },
+        { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799 },
+        { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299 }
+      ];
+      
       try {
-        // Load featured products
-        const featuredResponse = await api.get('/products/featured');
-        setFeaturedProducts(featuredResponse.data.featured_products || []);
-
-        // Load AI recommendations
-        const aiResponse = await aiApi.post('/recommendations', {
-          limit: 8
-        });
-        setRecommendations(aiResponse.data.recommendations || []);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        // Add some demo data for now
-        setFeaturedProducts([
-          { id: 1, name: 'Premium Headphones', description: 'High-quality wireless headphones with noise cancellation', price: 16500, is_featured: true },
-          { id: 2, name: 'Smart Watch', description: 'Advanced smartwatch with health monitoring', price: 24999, is_featured: true },
-          { id: 3, name: 'Laptop Pro', description: 'High-performance laptop for professionals', price: 107999, is_featured: true }
-        ]);
-        setRecommendations([
-          { id: 4, name: 'Wireless Mouse', description: 'Ergonomic wireless mouse for productivity', price: 4199 },
-          { id: 5, name: 'Keyboard Mechanical', description: 'RGB mechanical keyboard for gaming', price: 10799 },
-          { id: 6, name: 'Monitor 4K', description: '27-inch 4K monitor with HDR support', price: 33299 }
-        ]);
-      } finally {
+        // Set demo data immediately to reduce perceived loading time
+        setFeaturedProducts(demoFeaturedProducts);
+        setRecommendations(demoRecommendations);
         setLoading(false);
+        
+        // Try to load real data in background
+        const [featuredResponse, aiResponse] = await Promise.all([
+          api.get('/products/featured').catch(err => ({ data: { featured_products: demoFeaturedProducts } })),
+          aiApi.post('/recommendations', { limit: 8 }).catch(err => ({ data: { recommendations: demoRecommendations } }))
+        ]);
+        
+        // Update with real data if available
+        if (featuredResponse.data.featured_products && featuredResponse.data.featured_products.length > 0) {
+          setFeaturedProducts(featuredResponse.data.featured_products);
+        }
+        
+        if (aiResponse.data.recommendations && aiResponse.data.recommendations.length > 0) {
+          setRecommendations(aiResponse.data.recommendations);
+        }
+        
+      } catch (error) {
+        console.warn('Using demo data due to API error:', error);
+        setError('Using demo data - API temporarily unavailable');
+        // Demo data is already set above
       }
     };
 
@@ -979,30 +996,34 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
-    if (token) {
-      // Add token to API requests
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Here you could verify the token and get user info
-    }
+    const initializeAuth = async () => {
+      if (token) {
+        // Add token to API requests
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // Verify the token and get user info
+        try {
+          // For demo purposes, decode the user info from localStorage if available
+          const savedUser = localStorage.getItem('user');
+          if (savedUser && !user) {
+            setUser(JSON.parse(savedUser));
+          }
+        } catch (error) {
+          console.error('Error loading saved user:', error);
+          // If token is invalid, clear it
+          handleLogout();
+        }
+      }
+    };
     
-    // Auto-login test user for demo purposes
-    if (!user && !token) {
-      const testUser = {
-        id: 1,
-        username: 'testuser',
-        email: 'test@example.com',
-        first_name: 'Test',
-        last_name: 'User'
-      };
-      const testToken = 'demo-token-12345';
-      handleLogin(testUser, testToken);
-    }
-  }, [token, user]);
+    initializeAuth();
+  }, [token]);
 
   const handleLogin = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
     localStorage.setItem('token', userToken);
+    localStorage.setItem('user', JSON.stringify(userData));
     api.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
   };
 
@@ -1010,6 +1031,7 @@ function App() {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     delete api.defaults.headers.common['Authorization'];
   };
 
